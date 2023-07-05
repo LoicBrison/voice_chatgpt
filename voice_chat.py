@@ -15,7 +15,7 @@ import wave
 from google.cloud import speech
 from google.cloud import texttospeech
 import openai
-openai.api_key = "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"
+openai.api_key = "sk-.."
 
 gpt_response = ""
 
