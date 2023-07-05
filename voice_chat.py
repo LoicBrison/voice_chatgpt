@@ -14,8 +14,8 @@ import pyaudio
 import wave
 from google.cloud import speech
 from google.cloud import texttospeech
-from ChatGPT_lite.ChatGPT import Chatbot
-
+import openai
+openai.api_key = "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"
 
 gpt_response = ""
 
@@ -30,7 +30,7 @@ def speech_to_text(speech_file):
 
     config = speech.RecognitionConfig(
         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-        language_code="en-US",
+        language_code="fr-FR",
     )
 
     # Detects speech in the audio file
@@ -45,16 +45,12 @@ def speech_to_text(speech_file):
 
 def ask_chat_gpt(args, prompt):
     global gpt_response
-    chat = Chatbot(args.session_token, args.bypass_node)
     
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(chat.wait_for_ready())
-    response = loop.run_until_complete(chat.ask(prompt))
-    chat.close()
-    loop.stop()
-    
-    gpt_response = response['answer']
+    chat_completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=[{"role": "user", "content": prompt}])
+    # print the chat completion
+    response = chat_completion.choices[0].message.content
+    print(response)
+    gpt_response = response
 
     return
 
@@ -68,7 +64,7 @@ def text_to_speech(tts):
 
     # Build the voice request, select the language code ("en-US") and the ssml
     voice = texttospeech.VoiceSelectionParams(
-        language_code="en-US", ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
+        language_code="fr-FR", ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
     )
 
     # Select the type of audio file you want returned
